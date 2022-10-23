@@ -36,7 +36,7 @@ const HotelSchema = new mongoose.Schema({
         max:5,
         
     },
-    distance:{
+    title:{
         type:String,
         required:true,
     },

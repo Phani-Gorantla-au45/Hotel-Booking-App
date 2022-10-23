@@ -1,11 +1,10 @@
 import express from "express";
+import { login, register } from "../controllers/user.js";
 
 let authRouter = express.Router();
 
-authRouter.get('/', (req,res)=> {
-    console.log("here")
-    res.send("Hello World")
-})
+authRouter.post('/register', register)
+authRouter.post('/login', login)
 
 
 export default authRouter;
