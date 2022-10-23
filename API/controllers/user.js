@@ -1,52 +1,40 @@
 import User from "../models/User.js"
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import cookie from 'cookie-parser';
 
-export const register = async (req,res)=> {
-    
-    var salt = bcrypt.genSaltSync(10);
-    var hash = bcrypt.hashSync(req.body.password, salt);
 
-    const newUser = new User({
-        username: req.body.username,
-        email:req.body.email,
-         password: hash,
-      
-    });
+export const updateUser = async (req,res)=> {
     try{
-        const user = await newUser.save(newUser);
-        res.status(200).json("User has been created")
+        const updatedModel = await User.findByIdAndUpdate(req.params.id,{$set :req.body})
+        res.status(201).json(updatedModel)
     }
     catch(err){
         res.status(500).json(err)
+    }
 }
 
-}
-
-export const login = async (req, res)=>{
-    
-    
+export const deleteUser = async (req,res)=>{
     try{
-        const user = await User.findOne({username:req.body.username})
-        
-        if(!user){
-            res.status(404).json("Username doesnt exist")
-        }
-       const result = await bcrypt.compare(req.body.password,user.password)
-       if(!result){
-        res.status(500).json('Invalid Credentials')
-       }
-       const { password,isAdmin, ...otherdetails } = user._doc;
+        const user = await User.findByIdAndDelete(req.params.id)
+        res.status(200).json("the hotel has been deleted")
+    }
+    catch(err){
+        res.status(500).json(err)
+    }
+}
 
-      const token = jwt.sign({
-        data: {adminstatus:user.isAdmin,username:user.username}
-      }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      
-      console.log(token)
+export const getUserDetails = async (req,res)=>{
+    try{
+        const user = await User.findById(req.params.id)
+        res.status(200).json(user)
+    }
+    catch(err){
+        res.status(500).json(err)
+    }
+}
 
-       res.cookie("Access_Token", token).status(200).json(otherdetails)
-
+export const getAllUsersDetails = async (req,res)=>{
+    try{
+        const users = await User.find()
+        res.status(200).json(users)
     }
     catch(err){
         res.status(500).json(err)
